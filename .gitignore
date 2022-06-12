@@ -1,0 +1,4 @@
+.stackql/
+stackql
+*.sql
+*.csv

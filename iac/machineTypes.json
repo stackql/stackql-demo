@@ -1,0 +1,7 @@
+{
+  "f1-micro": "https://www.googleapis.com/compute/v1/projects/stackql-demo/zones/australia-southeast1-a/machineTypes/f1-micro",
+  "e2-micro": "https://www.googleapis.com/compute/v1/projects/stackql-demo/zones/australia-southeast1-a/machineTypes/e2-micro",
+  "e2-small": "https://www.googleapis.com/compute/v1/projects/stackql-demo/zones/australia-southeast1-a/machineTypes/e2-small",
+  "g1-small": "https://www.googleapis.com/compute/v1/projects/stackql-demo/zones/australia-southeast1-a/machineTypes/g1-small",
+  "e2-medium": "https://www.googleapis.com/compute/v1/projects/stackql-demo/zones/australia-southeast1-a/machineTypes/e2-medium"
+}

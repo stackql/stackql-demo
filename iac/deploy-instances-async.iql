@@ -1,0 +1,23 @@
+{{range .instances}}
+ INSERT INTO google.compute.instances 
+ (
+  zone,
+  project,
+  data__name,
+  data__machineType,
+  data__deletionProtection,
+  data__networkInterfaces,
+  data__disks,
+  data__labels
+ ) 
+ SELECT
+'{{.zone}}',
+'{{.project}}',
+'{{.name}}',
+'{{.machineType}}',
+'{{.deletionProtection}}',
+'{{.networkInterfaces}}',
+'{{.disks}}',
+'{{.labels}}';
+
+{{end}}

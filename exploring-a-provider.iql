@@ -1,0 +1,37 @@
+/*
+./stackql shell
+*/
+
+SHOW PROVIDERS;
+
+REGISTRY LIST;
+
+REGISTRY PULL google v0.1.2;
+
+SHOW PROVIDERS;
+
+SHOW SERVICES IN google;
+
+SHOW SERVICES IN google LIKE '%compute%';
+
+SHOW EXTENDED SERVICES IN google LIKE '%compute%';
+
+SHOW RESOURCES IN google.compute;
+
+SHOW RESOURCES IN google.compute LIKE '%instances%';
+
+DESCRIBE EXTENDED google.compute.instances;
+
+SHOW EXTENDED METHODS IN google.compute.instances;
+
+REGISTRY PULL okta v0.1.0;
+
+SHOW PROVIDERS;
+
+SHOW SERVICES IN okta;
+
+SHOW RESOURCES IN okta.user;
+
+DESCRIBE okta.user.users;
+
+SHOW EXTENDED METHODS IN okta.user.users;
