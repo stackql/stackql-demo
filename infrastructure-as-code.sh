@@ -11,7 +11,7 @@
 
 ./stackql exec --dryrun --output text -H -f test.sql -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json
 
-AUTH='{ "google": { "credentialsfilepath": "creds/stackql-demo-d929cfea5089.json",  "type": "service_account" }, "okta": { "credentialsenvvar": "OKTA_SECRET_KEY", "type": "api_key" }}'
+AUTH='{ "google": { "credentialsfilepath": "creds/stackql-demo-d929cfea5089.json",  "type": "service_account" }, "okta": { "credentialsenvvar": "OKTA_SECRET_KEY", "type": "api_key" }, "github": { "credentialsenvvar": "GITHUB_CREDS",  "type": "basic" }, "netlify": { "credentialsenvvar": "NETLIFY_TOKEN",  "type": "api_key", "valuePrefix": "Bearer "}}'
 ./stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json --auth="${AUTH}" 
 ./stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
 ./stackql exec -i ./iac/deploy-instances-sync.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"

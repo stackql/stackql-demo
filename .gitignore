@@ -2,3 +2,4 @@
 stackql
 *.sql
 *.csv
+.auth
