@@ -2,19 +2,23 @@
 # GENERATING INFRASTRUCTURE TEMPLATES
 # 
 
-./stackql exec --output text -H "SHOW INSERT INTO google.storage.buckets"
-./stackql exec --output text -H "SHOW INSERT /*+ REQUIRED */ INTO google.storage.buckets"
+
+
+stackql exec "registry pull google;"
+
+stackql exec --output text -H "SHOW INSERT INTO google.storage.buckets"
+stackql exec --output text -H "SHOW INSERT /*+ REQUIRED */ INTO google.storage.buckets"
 
 #
 # PROVISIONING INFRASTRUCTURE
 #
 
-./stackql exec --dryrun --output text -H -f test.sql -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json
+stackql exec --dryrun --output text -H -f test.sql -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json
 
-AUTH='{ "google": { "credentialsfilepath": "creds/stackql-demo-d929cfea5089.json",  "type": "service_account" }, "okta": { "credentialsenvvar": "OKTA_SECRET_KEY", "type": "api_key" }, "github": { "credentialsenvvar": "GITHUB_CREDS",  "type": "basic" }, "netlify": { "credentialsenvvar": "NETLIFY_TOKEN",  "type": "api_key", "valuePrefix": "Bearer "}}'
-./stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json --auth="${AUTH}" 
-./stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
-./stackql exec -i ./iac/deploy-instances-sync.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
+AUTH='{ "google": { "credentialsfilepath": "creds/google-key.json",  "type": "service_account" }, "okta": { "credentialsenvvar": "OKTA_SECRET_KEY", "type": "api_key" }, "github": { "credentialsenvvar": "GITHUB_CREDS",  "type": "basic" }, "netlify": { "credentialsenvvar": "NETLIFY_TOKEN",  "type": "api_key", "valuePrefix": "Bearer "}}'
+stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.json --auth="${AUTH}" 
+stackql exec -i ./iac/deploy-instances-async.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
+stackql exec -i ./iac/deploy-instances-sync.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
 
 #
 # CLONING INFRASTRUCTURE
@@ -94,6 +98,6 @@ SELECT disks FROM google.compute.instances WHERE project = 'stackql-demo' AND zo
 # DEPROVISIONING INFRASTRUCTURE
 #
 
-./stackql exec -i ./iac/deprovision-instances.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
+stackql exec -i ./iac/deprovision-instances.iql --iqldata ./iac/vars.jsonnet --auth="${AUTH}"
 
 
