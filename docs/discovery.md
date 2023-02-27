@@ -10,7 +10,7 @@
 <li><a href="#show-all-available-methods-in-a-resource">Show all available methods in a resource</a></li>
 </ol>
 </details>
-
+<br />
 StackQL is built upon the provider's API specification as OpenAPI extensions which are mastered in the [__StackQL Provider Registry__](https://github.com/stackql/stackql-provider-registry); docs for each provider are available in the [__Registry Docs__](https://registry.stackql.io/).  
 
 Meta queries, or queries that enumerate and describe the services, resources, and operations available in a provider, are available within StackQL using the [__`DESCRIBE`__](https://stackql.io/docs/language-spec/describe) and [__`SHOW`__](https://stackql.io/docs/language-spec/show) commands.  
