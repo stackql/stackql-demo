@@ -9,6 +9,7 @@
 </ol>
 </details>
 <br />
+
 StackQL can be used for Infrastructure-as-Code routines using [__`INSERT`__](https://stackql.io/docs/language-spec/insert), `UPDATE` and [__`DELETE`__](https://stackql.io/docs/language-spec/delete) operations.  StackQL creates infrastructure templates (`INSERT` templates) that can be used to provision new instances of cloud resources in a provider.  
 
 StackQL supports __`json`__ and [__`jsonnet`__](https://jsonnet.org/) as configuration languages for supplying parameters and variables to IaC and query operations.  `INSERT` templates include a `jsonnet` block for parameterization; this can be used inline in the shell or supplied via an external file; for more information, see: [__`Using Variables`__](https://stackql.io/docs/getting-started/variables).  
