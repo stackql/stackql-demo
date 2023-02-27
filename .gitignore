@@ -5,3 +5,4 @@ stackql
 .auth
 auth.sh
 api.keys
+*.iql
