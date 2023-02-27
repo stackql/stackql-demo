@@ -1,34 +1,24 @@
 # StackQL Demo
 
+This repository contains demos for StackQL using the command line `exec` and `shell` commands.  The followind additional demo repositories are available:  
+
+- [StackQL Jupyter Notebook Demo](https://github.com/stackql/stackql-jupyter-demo)
+- [`stackql-exec` GitHub Actions Demo](https://github.com/stackql/stackql-exec)
+- [`stackql-assert` GitHub Actions Demo](https://github.com/stackql/stackql-assert)
+
 **NOTE**: For these demos to work, you will need to:
 
-1. Place `google` service account json credentials in the `.gitignore`d location `creds/google-key.json`.
-2. Edit references to provider objects, eg: the `google` project in [iac/vars.jsonnet](/iac/vars.jsonnet), to refer to objects you own.
+1. Set required environment variables for provider authentication (see the [StackQL registry docs](https://registry.stackql.io/) for information sepcific to the provider you are using)
+2. Place `google` service account json credentials in the `.gitignore`d location `creds/google-key.json`.
+2. Edit references to provider objects to refer to objects you own, eg: the `google` project in `jsonnet` configuration blocks or files.
 
-This repository contains demos of different StackQL functions, including:
+Demos are broken down by providers in the `providers` directory, for example `providers/aws` contains demos for the `aws` provider.  There are also multi cloud/cross provider demos in the `providers/multi-cloud` directory.  Subdirectories for Infrastructure as Code (IaC) demos and queries (including CSPM queriers) are included under each provider demo dir, for instance `providers/google/iac` and `providers/google/queries`.  
 
-- [Exploring a provider](/README.md#exploring-a-provider).
-- [Infrastructure as Code](/README.md#infrastructure-as-code).
-- [Querying a Provider](/README.md#querying-a-provider).
-- [Jupyter Notebook Demo](/README.md#jupyter-notebook-demo).
-- [Lifecycle Operations](/README.md#lifecycle-operations).
+Before getting started, you can familairize yourself with the StackQL, including the object model and working with providers by looking at the following topics.
 
-## Exploring a Provider
-Run meta commands from `exploring-a-provider.iql` in the StackQL shell to explore a provider, including `SHOW` and `DESCRIBE` commands.
-
-## Infrastructure as Code
-Run commands from `infrastructure-as-code.sh` to demonstrate infrastructure as code functions including:
-
-- Creating infrastructure templates using `SHOW INSERT INTO`
-- Sourcing variables from `json` and `jsonnet` files
-- Provisioning resources asynchronously and synchronously
-- De-provisioning resources
-
-## Querying a Provider
-Run commands from `querying-a-provider.iql` to demonstrate querying a provider.
-
-## Jupyter Notebook Demo
-See the [Jupyter Notebook Demo](jupyter-demo/README.md) to perform analysis and visualization using StackQL.
-
-## Lifecycle Operations
-Run commands from `lifecycle-operations.iql` to demonstrate lifecycle operations, such as starting or stopping a VM instance.
+- [Exploring a provider](docs/discovery.md).
+- [SQL Usage](docs/sql_usage.md).
+- [Output Types - including `json`, `csv`, `table`](docs/outputs.md).
+- [Creating Infrastructure Templates](docs/infra_templates.md).
+- [Performing Lifecycle Operations](docs/lifecycle_ops.md).
+- [Syncronous and Asnycronous Operations](docs/sync_async.md).
