@@ -1,5 +1,16 @@
 # StackQL Discovery Operations (meta queries)
 
+<details open="open">
+<summary>Contents</summary>
+<ol>
+<li><a href="#pulling-a-provider-from-the-registry">Pulling a provider from the registry</a></li>
+<li><a href="#showing-all-services-in-a-provider">Showing all services in a provider</a></li>
+<li><a href="#showing-all-resources-in-a-service">Showing all resources in a service</a></li>
+<li><a href="#describe-a-resource">Describe a resource</a></li>
+<li><a href="#show-all-available-methods-in-a-resource">Show all available methods in a resource</a></li>
+</ol>
+</details>
+
 StackQL is built upon the provider's API specification as OpenAPI extensions which are mastered in the [__StackQL Provider Registry__](https://github.com/stackql/stackql-provider-registry); docs for each provider are available in the [__Registry Docs__](https://registry.stackql.io/).  
 
 Meta queries, or queries that enumerate and describe the services, resources, and operations available in a provider, are available within StackQL using the [__`DESCRIBE`__](https://stackql.io/docs/language-spec/describe) and [__`SHOW`__](https://stackql.io/docs/language-spec/show) commands.  
