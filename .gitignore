@@ -3,3 +3,5 @@ stackql
 *.sql
 *.csv
 .auth
+auth.sh
+api.keys

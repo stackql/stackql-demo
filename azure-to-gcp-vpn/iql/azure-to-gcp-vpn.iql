@@ -1,0 +1,10 @@
+--
+-- create Azure Resource Group
+--
+
+
+
+
+New-AzResourceGroup `
+  -Name "azure-to-gcp" `
+  -Location "Australia Southeast"

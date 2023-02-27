@@ -1,0 +1,230 @@
+/*
+    INFRAQL DEMO - DEPLOY GCP FOUNDATIONS
+    https://cloud.google.com/foundation-toolkit
+*/
+{{ $global := . }}
+
+/*** create folders ***/
+
+{{ range .environments }}
+INSERT INTO google.cloudresourcemanager.folders(
+  data__displayName,
+  data__parent
+)
+SELECT
+  '{{ .name }}',
+  '{{ $.root_node }}'
+;
+{{ end }}
+
+/*** create root level projects ***/
+
+{{ range .root_projects }}
+INSERT INTO google.cloudresourcemanager.projects(
+  data__displayName,
+  data__parent,
+  data__projectId
+)
+SELECT
+  '{{ .displayName }}',
+  '{{ $.organization_id }}',
+  '{{ .projectId }}'
+;
+{{ end }}
+
+/*** enable apis ***/
+
+{{ range .root_projects }}
+{{ $project := . }}
+{{ range .apis }}
+EXEC google.serviceusage.services.enable
+@name = (
+  SELECT 
+   'projects/' || name || '/services/{{ . }}'
+   FROM google.cloudresourcemanager.projects 
+   WHERE parent='{{ $global.organization_id }}'
+   and displayName= '{{ $project.displayName }}'
+);
+{{end}}
+{{end}}
+
+/*** create terraform service accounts ***/
+
+{{ range .environments }}
+EXEC google.iam.`projects.serviceAccounts`.create 
+@name = '{{ (index $.root_projects 0).projectId }}'
+@@json = '{
+  "accountId": "terraform-{{ .name }}"
+}';
+{{ end }}
+
+/*** tf service account role bindings ***/
+
+{{ range .environments }}
+EXEC google.cloudresourcemanager.folders.setIamPolicy 
+@resource = 'folders/{{ .name }}' 
+@@json = '{
+  "policy": {
+    "bindings": [
+      {
+        "role": "roles/compute.networkAdmin",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     },
+     {
+        "role": "roles/owner",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     },	 
+     {
+        "role": "roles/resourcemanager.folderViewer",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     },
+     {
+        "role": "roles/resourcemanager.projectCreator",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     }	 
+	] 
+   }
+}';
+;
+{{ end }}
+
+/*** create tf gcs bootstrap bucket ***/
+
+INSERT INTO google.storage.buckets(
+  project,
+  data__name,
+  data__location,
+  data__locationType,
+  data__labels
+)
+SELECT
+  projectId,
+  '{{ $global.prefix }}-tf-bootstrap',
+  'US',
+  'multi-region',
+  '[{"location":"US"},{"name":"tf-bootstrap"},{"storage_class":"multi_regional"}]'
+  FROM google.cloudresourcemanager.projects 
+  WHERE parent='{{ $global.organization_id }}'
+  AND displayName = 'terraform';
+
+/*** create tf gcs backend bucket per env ***/
+
+{{ range .environments }}
+-- create bucket
+INSERT INTO google.storage.buckets(
+  project,
+  data__name,
+  data__location,
+  data__locationType,
+  data__labels
+)
+SELECT
+  projectId,
+  '{{ $global.prefix }}-tf-{{ .name }}',
+  'US',
+  'multi-region',
+  '[{"location":"US"},{"name":"{{ .name }}"},{"storage_class":"multi_regional"}]'
+  FROM google.cloudresourcemanager.projects 
+  WHERE parent='{{ $global.organization_id }}'
+  AND displayName = 'terraform';
+  
+-- bucket iam binding
+EXEC google.storage.buckets.setIamPolicy 
+@bucket = '{{ $global.prefix }}-tf-{{ .name }}'
+@@json = '{
+  "bindings":[
+    {
+      "role": "roles/storage.objectAdmin",
+      "members":[
+        "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+      ]
+    }	
+  ]
+}';
+{{ end }}
+
+/*** create audit bq dataset ***/
+
+INSERT INTO google.bigquery.datasets(
+  projectId,
+  data__location,
+  data__datasetReference
+)
+SELECT
+  projectId,
+  'US',
+  '{ "datasetId": "audit_export", "projectId": "audit" }'
+  FROM google.cloudresourcemanager.projects 
+  WHERE parent='{{ $global.organization_id }}'
+  AND displayName = 'audit';
+
+/*** create org role bindings */
+
+{{ range .environments }}
+EXEC google.cloudresourcemanager.organizations.setIamPolicy 
+@resource = '{{ $global.organization_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": [
+      {
+        "role": "roles/compute.xpnAdmin",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     },
+     {
+        "role": "roles/resourcemanager.organizationViewer",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     }	 
+	] 
+   }
+}';
+{{ end }}
+
+/*** create billing role binding */
+
+{{ range .environments }}
+EXEC google.cloudbilling.billingAccounts.setIamPolicy 
+@resource = '{{ $global.organization_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": [
+      {
+        "role": "roles/billing.user",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     } 
+	] 
+   }
+}';
+{{ end }}
+
+/*** create audit project viewer role binding */
+
+{{ range .environments }}
+EXEC google.cloudresourcemanager.projects.setIamPolicy 
+@resource = (SELECT 'projects/' || projectId FROM google.cloudresourcemanager.projects WHERE parent='{{ $global.organization_id }}' AND displayName = 'audit')
+@@json = '{
+  "policy": {
+    "bindings": [
+      {
+        "role": "roles/viewer",
+        "members": [
+	      "serviceAccount:terraform-{{ .name }}@{{ (index $.root_projects 0).projectId }}.iam.gserviceaccount.com"
+		]
+     }	 
+	] 
+   }
+}';
+{{ end }}

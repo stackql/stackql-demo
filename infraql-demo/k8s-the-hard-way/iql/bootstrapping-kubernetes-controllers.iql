@@ -1,0 +1,126 @@
+/*
+    INFRAQL DEMO - KUBERNETES THE HARD WAY : BOOTSTRAPPING KUBERNETES CONTROLLERS
+    https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/08-bootstrapping-kubernetes-controllers.md
+*/
+
+<<<jsonnet
+// import vars
+local vars = import '../data/vars.jsonnet';
+{
+    global: vars.global,    
+    httpHealthCheck: vars.httpHealthCheck,
+    firewallRule: {
+        allowed: [{'IPProtocol': 'tcp'}], 
+        direction: 'INGRESS', 
+        name: 'kubernetes-the-hard-way-allow-health-check', 
+        network: 'https://compute.googleapis.com/compute/v1/projects/infraql-demo/global/networks/kubernetes-the-hard-way',
+        sourceRanges:  ['209.85.152.0/22', '209.85.204.0/22', '35.191.0.0/16']
+    },
+    targetPool: {
+        healthChecks: ['https://compute.googleapis.com/compute/v1/projects/infraql-demo/global/httpHealthChecks/kubernetes'], 
+        name: 'kubernetes-target-pool', 
+        sessionAffinity: 'NONE',
+        instances: [{'instance': 'https://compute.googleapis.com/compute/v1/projects/infraql-demo/zones/australia-southeast1-a/instances/controller-0'}, {'instance': 'https://compute.googleapis.com/compute/v1/projects/infraql/zones/australia-southeast1-a/instances/controller-1'}, {'instance': 'https://compute.googleapis.com/compute/v1/projects/infraql/zones/australia-southeast1-a/instances/controller-2'}]
+    },
+    forwardingRule: {
+        IPAddress: importstr '../scripts/address.tmp', 
+        loadBalancingScheme: 'EXTERNAL', 
+        name: 'kubernetes-forwarding-rule', 
+        portRange: '6443', 
+        target: 'https://compute.googleapis.com/compute/v1/projects/infraql-demo/regions/australia-southeast1/targetPools/kubernetes-target-pool'
+    }
+
+}
+>>>
+
+--
+-- create health check
+--
+INSERT /*+ AWAIT  */ INTO compute.httpHealthChecks(
+  project,
+  data__checkIntervalSec,
+  data__description,
+  data__healthyThreshold,
+  data__host,
+  data__name,
+  data__port,
+  data__requestPath,
+  data__timeoutSec,
+  data__unhealthyThreshold
+)
+SELECT
+  '{{ .global.project }}',
+   {{ .httpHealthCheck.checkIntervalSec }},
+  '{{ .httpHealthCheck.description }}',
+   {{ .httpHealthCheck.healthyThreshold }},
+  '{{ .httpHealthCheck.host }}',
+  '{{ .httpHealthCheck.name }}',
+   {{ .httpHealthCheck.port }},
+  '{{ .httpHealthCheck.requestPath }}',
+   {{ .httpHealthCheck.timeoutSec }},
+   {{ .httpHealthCheck.unhealthyThreshold }}
+;
+
+--
+-- create firewall rule for health check
+--
+INSERT /*+ AWAIT  */ INTO compute.firewalls
+(
+ project,
+ data__name,
+ data__network,
+ data__direction,
+ data__sourceRanges,
+ data__allowed
+) 
+SELECT
+ '{{ .global.project }}',
+ '{{.firewallRule.name}}',
+ '{{.firewallRule.network}}',
+ '{{.firewallRule.direction}}',
+ '{{.firewallRule.sourceRanges}}',
+ '{{.firewallRule.allowed}}';
+
+--
+-- create target pool
+--
+INSERT /*+ AWAIT  */ INTO compute.targetPools(
+  project,
+  region,
+  data__healthChecks,
+  data__instances,
+  data__name,
+  data__sessionAffinity
+)
+SELECT
+  '{{ .global.project }}',
+  '{{ .global.region }}',
+  '{{ .targetPool.healthChecks }}',
+  '{{ .targetPool.instances }}',
+  '{{ .targetPool.name }}',
+  '{{ .targetPool.sessionAffinity }}'
+;
+
+--
+-- create forwarding rule
+--
+INSERT /*+ AWAIT  */ INTO compute.forwardingRules(
+  project,
+  region,
+  data__IPAddress,
+  data__loadBalancingScheme,
+  data__name,
+  data__portRange,
+  data__target
+)
+SELECT
+  '{{ .global.project }}',
+  '{{ .global.region }}',
+  '{{ .forwardingRule.IPAddress }}',
+  '{{ .forwardingRule.loadBalancingScheme }}',
+  '{{ .forwardingRule.name }}',
+  '{{ .forwardingRule.portRange }}',
+  '{{ .forwardingRule.target }}'
+;
+
+

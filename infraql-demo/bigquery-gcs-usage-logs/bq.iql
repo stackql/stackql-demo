@@ -1,0 +1,85 @@
+<<<jsonnet
+
+// variables
+local projectId = 'infraql';
+local datasetId = 'infraql_downloads';
+local usage_fields = import 'cloud_storage_usage_schema_v0.json';
+
+// config
+{
+  projectId: projectId,
+  datasetId: datasetId,
+  location: 'US',
+  logs_bucket: 'infraql-download-logs',
+  object_prefix: 'infraql_downloads_usage_2021*',
+  description: 'Storage and usage logs from the website',
+  friendlyName: 'InfraQL Download Logs',
+  table: {
+    usage: {
+      tableId: 'usage',
+      friendlyName: 'Usage Logs',
+	  description: 'Big Query table for GCS usage logs',
+	  schema: {
+        fields: usage_fields
+	  }
+    },
+  },
+}
+
+>>>
+
+INSERT INTO google.bigquery.datasets(
+  projectId,
+  data__location,
+  data__datasetReference,
+  data__description,
+  data__friendlyName
+)
+SELECT
+  '{{ .projectId }}',
+  '{{ .location }}',
+  '{ "datasetId": "{{ .datasetId }}", "projectId": "{{ .projectId }}" }',
+  '{{ .description }}',
+  '{{ .friendlyName }}'
+;
+
+INSERT INTO google.bigquery.tables(
+  datasetId,
+  projectId,
+  data__description,
+  data__friendlyName,
+  data__tableReference,
+  data__schema
+)
+SELECT
+  '{{ .datasetId }}',
+  '{{ .projectId }}',
+  '{{ .table.usage.description }}',
+  '{{ .table.usage.friendlyName }}',
+  '{"projectId": "{{ .projectId }}", "datasetId": "{{ .datasetId }}", "tableId": "{{ .table.usage.tableId }}"}',
+  '{{ .table.usage.schema }}'
+;  
+
+INSERT INTO google.bigquery.jobs(
+  projectId,
+  data__configuration
+)
+SELECT
+  'infraql',
+  '{
+    "load": {
+      "destinationTable": {
+        "projectId": "{{ .projectId }}",
+        "datasetId": "{{ .datasetId }}",
+        "tableId": "{{ .table.usage.tableId }}"
+      },
+      "sourceUris": [
+        "gs://{{ .logs_bucket }}/{{ .object_prefix }}"
+      ],
+      "schema": {{ .table.usage.schema }},
+	  "skipLeadingRows": 1,
+      "maxBadRecords": 0,
+      "projectionFields": []
+    }
+  }'
+;

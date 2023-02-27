@@ -1,0 +1,108 @@
+/*
+    INFRAQL DEMO - KUBERNETES THE HARD WAY : COMPUTE RESOURCES
+    https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/03-compute-resources.md
+*/
+
+--
+-- create VPC 
+--
+INSERT /*+ AWAIT  */ INTO compute.networks
+(
+ project,
+ data__name,
+ data__autoCreateSubnetworks,
+ data__routingConfig
+) 
+SELECT
+'{{ .global.project }}',
+'{{ .network.name }}',
+{{ .network.autoCreateSubnetworks }},
+'{{ .network.routingConfig }}';
+
+--
+-- create subnetwork
+--
+INSERT /*+ AWAIT  */ INTO compute.subnetworks
+(
+ project,
+ region,
+ data__name,
+ data__network,
+ data__ipCidrRange,
+ data__privateIpGoogleAccess
+) 
+SELECT
+'{{ .global.project }}',
+'{{ .global.region }}',
+'{{ .subnetwork.name }}',
+'{{ .subnetwork.network }}',
+'{{ .subnetwork.ipCidrRange }}',
+{{ .subnetwork.privateIpGoogleAccess }};
+
+--
+-- create public IP address
+--
+INSERT /*+ AWAIT  */ INTO compute.addresses
+(
+ project,
+ region,
+ data__name
+) 
+SELECT
+'{{ .global.project }}',
+'{{ .global.region }}',
+'{{ .address.name }}';
+
+--
+-- create firewall rules
+--
+{{range .firewalls}}
+INSERT /*+ AWAIT  */ INTO compute.firewalls
+(
+ project,
+ data__name,
+ data__network,
+ data__direction,
+ data__sourceRanges,
+ data__allowed
+) 
+SELECT
+'{{.project}}',
+'{{.name}}',
+'{{.network}}',
+'{{.direction}}',
+'{{.sourceRanges}}',
+'{{.allowed}}';
+{{end}}
+
+--
+-- create instances
+--
+{{range .instances}}
+ INSERT INTO compute.instances 
+ (
+  zone,
+  project,
+  data__name,
+  data__machineType,
+  data__canIpForward,
+  data__deletionProtection,
+  data__scheduling,
+  data__networkInterfaces,
+  data__disks,
+  data__serviceAccounts,
+  data__tags
+ ) 
+ SELECT
+'{{.zone}}',
+'{{.project}}',
+'{{.name}}',
+'{{.machineType}}',
+{{.canIpForward}},
+{{.deletionProtection}},
+'{{.scheduling}}',
+'{{.networkInterfaces}}',
+'{{.disks}}',
+'{{.serviceAccounts}}',
+'{{.tags}}';
+{{end}}

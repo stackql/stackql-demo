@@ -1,0 +1,31 @@
+<<<jsonnet
+
+// variables
+local projectId = 'infraql';
+local datasetId = 'infraql_downloads';
+
+// config
+{
+  projectId: projectId,
+  datasetId: datasetId,
+  table: {
+    usage: {
+      tableId: 'usage',
+    },
+  },
+}
+
+>>>
+
+-- delete table(s) 
+
+DELETE FROM google.bigquery.tables 
+WHERE projectId = '{{ .projectId }}' 
+AND datasetId = '{{ .datasetId }}' 
+AND tableId = '{{ .table.usage.tableId }}';
+
+-- delete dataset
+
+DELETE FROM google.bigquery.datasets 
+WHERE projectId = '{{ .projectId }}' 
+AND datasetId = '{{ .datasetId }}';

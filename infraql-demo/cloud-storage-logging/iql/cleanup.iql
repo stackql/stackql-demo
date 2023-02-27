@@ -1,0 +1,85 @@
+/*
+    INFRAQL DEMO - CLOUD STORAGE LOGGING : CLEANUP
+*/
+
+--
+-- delete compute engine instances
+--
+{{range .instances}}
+DELETE /*+ AWAIT  */ FROM compute.instances 
+WHERE instance = '{{.name}}'
+AND project = '{{.project}}'
+AND zone = '{{.zone}}';
+{{end}}
+
+--
+-- delete forwarding rule
+--
+DELETE /*+ AWAIT  */ FROM compute.forwardingRules 
+WHERE forwardingRule = 'kubernetes-forwarding-rule'
+AND region = '{{ .global.region }}'
+AND project = '{{ .global.project }}';
+
+--
+-- delete target pool
+--
+DELETE /*+ AWAIT  */ FROM compute.targetPools 
+WHERE targetPool = 'kubernetes-target-pool'
+AND region = '{{ .global.region }}'
+AND project = '{{ .global.project }}';
+
+--
+-- delete health check
+--
+DELETE /*+ AWAIT  */ FROM compute.httpHealthChecks 
+WHERE httpHealthCheck = 'kubernetes'
+AND project = '{{ .global.project }}';
+
+--
+-- delete external address
+--
+DELETE /*+ AWAIT  */ FROM compute.addresses 
+WHERE address = '{{ .address.name }}'
+AND region = '{{ .global.region }}'
+AND project = '{{ .global.project }}';
+
+--
+-- delete firewall rules
+--
+{{range .firewalls}}
+DELETE /*+ AWAIT  */ FROM compute.firewalls 
+WHERE firewall = '{{.name}}'
+AND project = '{{.project}}';
+{{end}}
+
+--
+-- delete health check rule
+--
+DELETE /*+ AWAIT  */ FROM compute.firewalls 
+WHERE firewall = 'kubernetes-the-hard-way-allow-health-check'
+AND project = '{{ .global.project }}';
+
+--
+-- delete routes
+--
+{{range .routes}}
+DELETE /*+ AWAIT  */ FROM compute.routes 
+WHERE route = '{{.name}}'
+AND project = '{{.project}}';
+{{end}}
+
+--
+-- delete subnet
+--
+DELETE /*+ AWAIT  */ FROM compute.subnetworks 
+WHERE subnetwork = '{{ .subnetwork.name }}'
+AND region = '{{ .global.region }}'
+AND project = '{{ .global.project }}';
+
+--
+-- delete vpc network
+--
+DELETE /*+ AWAIT  */ FROM compute.networks 
+WHERE network = '{{ .network.name }}'
+AND region = '{{ .global.region }}'
+AND project = '{{ .global.project }}';

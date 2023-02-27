@@ -1,0 +1,38 @@
+/*
+    INFRAQL DEMO - CLOUD STORAGE LOGGING
+*/
+
+{{range .routes}}
+INSERT INTO compute.routes(
+  project,
+  data__destRange,
+  data__name,
+  data__network,
+  data__nextHopIp,
+  data__priority
+)
+SELECT
+  '{{.project}}',
+  '{{.destRange}}',
+  '{{.name}}',
+  '{{.network}}',
+  '{{.nextHopIp}}',
+   {{.priority}}
+;
+{{end}}
+
+
+### 2 create a bucket
+
+INSERT INTO google.storage.buckets(
+  project,
+  data__name,
+  data__location,
+  data__locationType
+)
+SELECT
+  'infraql',
+  'infraql-download-logs',
+  'US',
+  'multi-region'
+;

@@ -1,0 +1,1 @@
+infraql.exe exec -i ..\..\iql\deploy-cloud-foundations.iql --iqldata ..\..\data\vars.jsonnet --dryrun --outfile deploy-cloud-foundations-TEMPLATED.iql --output text --hideheaders
