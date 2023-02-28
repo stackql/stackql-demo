@@ -14,11 +14,11 @@
 </details>
 <br />
 
-StackQL implements a SQL language variant for querying cloud resources.  The language is ANSI SQL with extensions.  Full documentation for the language can be found in the [Language Specification](https://stackql.io/docs).  A summary of salient features is provided below.  
+StackQL implements a SQL language variant for querying cloud resources.  The language is ANSI SQL with extensions. Complete documentation for the language can be found in the [Language Specification](https://stackql.io/docs).  A summary of salient features is provided below.  
 
 ## Basic `SELECT` operations
 
-Simple `SELECT` queries can be run against a resource (provided the necessary authentication was provided).  Column projection as well as `SELECT *` are supported.  For example, to list all instances in a given AWS region showing the `instanceId` and `instanceType` fields, run the following:
+Simple `SELECT` queries can be run against a resource (provided the necessary authentication was provided).  Column projection, as well as `SELECT *` are supported.  For example, to list all instances in a given AWS region showing the `instanceId` and `instanceType` fields, run the following:
 
 ```sql
 SELECT instanceId, instanceType 
@@ -39,15 +39,15 @@ WHERE project = 'stackql-demo'
 AND zone = 'australia-southeast1-a';
 ```
 
-> StackQL keywords such as `SELECT`, `FROM` etc are not case sensitive - they are often capitalized by convention.  However, object names and field names are case sensitive.
+> StackQL keywords such as `SELECT`, `FROM` etc, are not case sensitive - they are often capitalized by convention.  However, object names and field names are case-sensitive.
 
-## Built in functions
+## Built-in functions
 
-Most common scalar functions you would expect in a SQL language are supported with StackQL including string, date, math, regular expression and json scalar functions.  More infomation on functions, their usage and examples see the [StackQL docs](https://stackql.io/docs) in the __Functions__ section of the __Language Specification__.  
+Most common scalar functions you would expect in a SQL language are supported with StackQL, including string, date, math, regular expression and json scalar functions.  More information on functions, their usage, and examples see the [StackQL docs](https://stackql.io/docs) in the __Functions__ section of the __Language Specification__.  
 
 ### String/JSON functions
 
-In many API responses, values are nested in JSON objects.  StackQL provides a [__`JSON_EXTRACT`__](https://stackql.io/docs/language-spec/functions/json/json_extract) function to extract values from JSON objects.  In addition some resource fields are returned as urls or self links.  StackQL provides a [__`SPLIT_PART`__](https://stackql.io/docs/language-spec/functions/string/split_part) function to extract parts of a string and just provide the meaningful value.  This query demonstrates the use of both the `JSON_EXTRACT` and `SPLIT_PART` functions:  
+In many API responses, values are nested in JSON objects.  StackQL provides a [__`JSON_EXTRACT`__](https://stackql.io/docs/language-spec/functions/json/json_extract) function to extract values from JSON objects.  In addition, some resource fields are returned as urls or self-links.  StackQL provides a [__`SPLIT_PART`__](https://stackql.io/docs/language-spec/functions/string/split_part) function to extract parts of a string and just provide the meaningful value.  This query demonstrates the use of both the `JSON_EXTRACT` and `SPLIT_PART` functions:  
 
 > The `id` field contains the string `/subscriptions/631d1c6d-2a65-43e7-93c2-688bfe4e1468/resourceGroups/stackql-ops-cicd-dev-01/providers/Microsoft.Compute/virtualMachines/test` and the `properties` field contains an object with a `hardwareProfile` field which in turn contains a `vmSize` field.  The `SPLIT_PART` function is used to extract the subscription id and the resource group name from the `id` field.  The `JSON_EXTRACT` function is used to extract the `vmSize` value from the `properties` field.
 
@@ -110,7 +110,7 @@ FROM aws.ec2.instances
 WHERE region = 'us-west-1';
 ```
 
-`JOIN` operations, including complex `JOIN` operations spanning multiple resources (tables) are supported.  The following query demonstartes a `JOIN`:  
+`JOIN` operations, including complex `JOIN` operations spanning multiple resources (tables) are supported.  The following query demonstrates a `JOIN`:  
 
 ```sql
 select n.id, n.name, n.IPv4Range, s.name as subnetwork_name
