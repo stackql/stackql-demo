@@ -1,4 +1,3 @@
-<<<jsonnet
 {
    project: 'stackql-demo-2',
    zone: 'australia-southeast1-a',
@@ -8,23 +7,3 @@
    },
    disks: [{autoDelete: true, boot: true, initializeParams: {diskSizeGb: '10', sourceImage: 'https://compute.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts'}, mode: 'READ_WRITE', type: 'PERSISTENT'}],
 }
->>>
-INSERT INTO google.compute.instances(
-  project,
-  zone,
-  data__name,
-  data__machineType,
-  data__disks
-)
-SELECT
-  '{{ .project }}' as project,
-  '{{ .zone }}' as zone,   
-  instanceId as name,	
-  CASE instanceType
-    WHEN 't2.micro' THEN '{{ .machineTypes.f1micro }}'
-  END  as machineType,
-  '{{ .disks }}' as disks
-FROM aws.ec2.instances WHERE region = '{{ .awsRegion }}'
-;
-
-
