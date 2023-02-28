@@ -9,7 +9,7 @@
 <li><a href="#date-functions">Date functions</a></li>
 <li><a href="#summary-aggregation-operations">Summary/Aggregation operations</a></li>
 <li><a href="#union-and-join-operations"><code>UNION</code> and <code>JOIN</code> operations</a></li>
-<li><a href="#windowing-functions">Windowing functions</a></li>
+<!-- <li><a href="#windowing-functions">Windowing functions</a></li> -->
 </ol>
 </details>
 <br />
