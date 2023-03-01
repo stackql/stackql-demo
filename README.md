@@ -1,6 +1,6 @@
 # StackQL Demo
 
-This repository contains demos for StackQL using the command line `exec` and `shell` commands.  The followind additional demo repositories are available:  
+This repository contains demos for StackQL using the command line `exec` and `shell` commands.  The following additional demo repositories are available:  
 
 - [StackQL Jupyter Notebook Demo](https://github.com/stackql/stackql-jupyter-demo)
 - [`stackql-exec` GitHub Actions Demo](https://github.com/stackql/stackql-exec)
