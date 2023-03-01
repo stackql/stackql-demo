@@ -1,0 +1,275 @@
+{
+  "billingacct": [
+    {
+      "members": [
+        "group:gcp-billing-admins@stackql.net"
+      ],
+      "roles": [
+        "roles/billing.admin"
+      ]
+    },
+    {
+      "members": [
+        "serviceAccount:terraform-prod@stackql-terraform.iam.gserviceaccount.com",
+        "serviceAccount:terraform-nonprod@stackql-terraform.iam.gserviceaccount.com",
+        "serviceAccount:terraform-datalabs@stackql-terraform.iam.gserviceaccount.com"
+      ],
+      "roles": [
+        "roles/billing.user"
+      ]
+    }	
+  ],
+  "org": [
+    {
+      "members": [
+        "domain:stackql.net"
+      ],
+      "roles": [
+        "roles/resourcemanager.projectCreator"
+      ]
+    },
+    {
+      "members": [
+        "group:gcp-organization-admins@stackql.net"
+      ],
+      "roles": [
+        "roles/cloudasset.viewer",
+        "roles/compute.xpnAdmin",
+        "roles/owner",
+        "roles/resourcemanager.folderAdmin",
+        "roles/resourcemanager.organizationAdmin",
+        "roles/resourcemanager.projectCreator",
+        "roles/storage.admin"
+      ]
+    },
+    {
+      "members": [
+        "group:gcp-billing-admins@stackql.net"
+      ],
+      "roles": [
+        "roles/billing.admin"
+      ]
+    },
+    {
+      "members": [
+        "group:stackql-data-eng-devs@stackql.net"
+      ],
+      "roles": [
+        "roles/resourcemanager.folderViewer",
+        "roles/resourcemanager.organizationViewer"
+      ]
+    },
+    {
+      "members": [
+        "serviceAccount:terraform-prod@stackql-terraform.iam.gserviceaccount.com",
+        "serviceAccount:terraform-nonprod@stackql-terraform.iam.gserviceaccount.com",
+        "serviceAccount:terraform-datalabs@stackql-terraform.iam.gserviceaccount.com"
+      ],
+      "roles": [
+        "organizations/69204654130/roles/stackql_terraform_xpn_resource_provisioner",
+        "roles/browser"
+      ]
+    },
+    {
+      "members": [
+        "serviceAccount:service-org-69204654130@security-center-api.iam.gserviceaccount.com"
+      ],
+      "roles": [
+        "roles/cloudfunctions.serviceAgent",
+        "roles/securitycenter.serviceAgent",
+        "roles/serviceusage.serviceUsageAdmin"
+      ]
+    },
+    {
+      "members": [
+        "group:stackql-secops@stackql.net"
+      ],
+      "roles": [
+        "roles/securitycenter.adminViewer"
+      ]
+    }
+  ],
+  "folders": {
+    "nonprod": [
+      {
+        "members": [
+          "group:stackql-data-eng-devs@stackql.net"
+        ],
+        "roles": [
+          "roles/owner"
+        ]
+      },
+      {
+        "members": [
+          "serviceAccount:terraform-nonprod@stackql-terraform.iam.gserviceaccount.com"
+        ],
+        "roles": [
+          "roles/compute.networkAdmin",
+          "roles/resourcemanager.folderViewer",
+          "roles/resourcemanager.projectCreator",
+          "roles/storage.admin",
+          "roles/artifactregistry.admin",
+          "roles/container.serviceAgent",
+          "roles/iam.securityAdmin",
+          "roles/bigquery.admin",
+          "roles/serviceusage.serviceUsageAdmin",
+          "roles/cloudsql.admin",
+          "roles/iam.serviceAccountAdmin",
+          "roles/pubsub.admin",
+          "roles/cloudfunctions.developer"
+        ]
+      }
+    ],
+    "prod": [
+      {
+        "members": [
+          "serviceAccount:terraform-prod@stackql-terraform.iam.gserviceaccount.com"
+        ],
+        "roles": [
+          "roles/compute.networkAdmin",
+          "roles/resourcemanager.folderViewer",
+          "roles/resourcemanager.projectCreator",
+          "roles/storage.admin",
+          "roles/artifactregistry.admin",
+          "roles/container.serviceAgent",
+          "roles/iam.securityAdmin",
+          "roles/bigquery.admin",
+          "roles/serviceusage.serviceUsageAdmin",
+          "roles/cloudsql.admin",
+          "roles/iam.serviceAccountAdmin",
+          "roles/pubsub.admin",
+          "roles/cloudfunctions.developer"
+        ]
+      }
+    ],
+    "datalabs": [
+      {
+        "members": [
+          "serviceAccount:terraform-datalabs@stackql-terraform.iam.gserviceaccount.com"
+        ],
+        "roles": [
+          "roles/compute.networkAdmin",
+          "roles/resourcemanager.folderViewer",
+          "roles/resourcemanager.projectCreator",
+          "roles/storage.admin"
+        ]
+      }
+    ]
+  },
+  "projects": {
+    "stackql_audit": [
+      {
+        "members": [
+          "group:gcp-organization-admins@stackql.net"
+        ],
+        "roles": [
+          "roles/logging.admin"
+        ],
+		"condition": {}
+      },
+      {
+        "members": [
+          "serviceAccount:o69204654130-594303@gcp-sa-logging.iam.gserviceaccount.com"
+        ],
+        "roles": [
+          "roles/logging.bucketWriter"
+        ],
+		"condition": {}
+      },
+      {
+        "members": [
+          "group:stackql-platform-eng-nonprod@stackql.net"
+        ],
+        "roles": [
+          "roles/logging.viewAccessor"
+        ],
+		"condition": {
+			"expression":
+				"resource.name == \"projects/stackql-audit/locations/australia-southeast1/buckets/stackql-org-logs/views/stackql-np-log-view\""
+		}
+      }	  
+    ]  
+  },
+  "buckets": {
+    "stackql_tf_prod": [
+      {
+        "members": ["group:stackql-platform-eng-prod@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-prod@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ],
+    "stackql_tf_modules_prod": [
+      {
+        "members": ["group:stackql-platform-eng-prod@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-prod@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ],
+    "stackql_tf_nonprod": [
+      {
+        "members": ["group:stackql-platform-eng-nonprod@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-nonprod@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ],
+    "stackql_tf_modules_nonprod": [
+      {
+        "members": ["group:stackql-platform-eng-nonprod@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-nonprod@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ],
+    "stackql_tf_datalabs": [
+      {
+        "members": ["group:stackql-platform-eng-datalabs@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-datalabs@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ],
+    "stackql_tf_modules_datalabs": [
+      {
+        "members": ["group:stackql-platform-eng-datalabs@stackql.net"],
+        "roles": ["roles/storage.objectViewer"]
+      },
+      {
+        "members": ["serviceAccount:terraform-datalabs@stackql-terraform.iam.gserviceaccount.com"],
+        "roles": ["roles/storage.objectAdmin"]
+      }	  
+    ]	
+  },
+  "topics": {
+    "stackql_np_log_topic": [
+      {
+        "members": ["serviceAccount:f1082016945998-435961@gcp-sa-logging.iam.gserviceaccount.com"],
+        "roles": ["roles/pubsub.publisher"]
+      }	  
+    ],
+    "stackql_prod_log_topic": [
+      {
+        "members": ["serviceAccount:f769431606453-974054@gcp-sa-logging.iam.gserviceaccount.com"],
+        "roles": ["roles/pubsub.publisher"]
+      }	  
+    ],
+    "stackql_billing_log_topic": [
+      {
+        "members": ["serviceAccount:b010fe2-9dfd97-ee2b33-235173@gcp-sa-logging.iam.gserviceaccount.com"],
+        "roles": ["roles/pubsub.publisher"]
+      }	  
+    ],	
+  }
+}

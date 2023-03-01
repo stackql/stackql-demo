@@ -1,0 +1,96 @@
+/*
+     ROOT LEVEL (ORG AND FOLDER) IAM FOR SERVICE ACCOUNTS AND GROUPS
+*/
+{{ $root := . }}
+
+/*** create custom roles ***/ {{ range .custom_roles }}
+
+INSERT INTO google.iam.`organizations.roles`(
+ parent,
+ data__role,
+ data__roleId )
+SELECT   
+ '{{ $root.organization_id }}',
+ '{"title": "{{ .title }}", "description": "{{ .description }}", "stage": "{{ .stage }}", "includedPermissions": {{ .includedPermissions }}}', 
+ '{{ .id }}' 
+;{{ end }}
+
+/*** create org role bindings */  
+
+EXEC google.cloudresourcemanager.organizations.setIamPolicy 
+@resource = '{{ $root.organization_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.org }}
+   }
+}';
+
+/*** create billing role bindings */
+
+EXEC google.cloudbilling.billingAccounts.setIamPolicy 
+@resource = '{{ $root.billing_account_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.billingacct }}
+   }
+}';
+
+/*** create nonprod folder role bindings */  
+
+EXEC google.cloudresourcemanager.folders.setIamPolicy 
+@resource = '{{ $root.nonprod_folder_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.folders.nonprod }}
+   }
+}';
+
+/*** create prod folder role bindings */  
+
+EXEC google.cloudresourcemanager.folders.setIamPolicy 
+@resource = '{{ $root.prod_folder_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.folders.prod }}
+   }
+}';
+
+/*** create datalabs folder role bindings */  
+
+EXEC google.cloudresourcemanager.folders.setIamPolicy 
+@resource = '{{ $root.datalabs_folder_id }}' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.folders.datalabs }}
+   }
+}';
+
+/*** create stackql-audit project level role bindings */  
+
+EXEC google.cloudresourcemanager.folders.setIamPolicy 
+@resource = 'projects/stackql-audit' 
+@@json = '{
+  "policy": {
+    "bindings": {{ $root.bindings.projects.stackql_audit }}
+   }
+}';
+
+/*** create role bindings for buckets in stackql-terraform */ {{ range $root.bindings.buckets }}
+
+-- creating policy bindings for {{ .name }}
+EXEC google.storage.buckets.setIamPolicy 
+@bucket = '{{ .name }}'
+@@json = '{
+	"bindings": {{ .data }}
+}';
+{{ end }}
+
+/*** create role bindings for topics in stackql-audit */ {{ range $root.bindings.topics }}
+
+-- creating policy bindings for {{ .name }}
+EXEC google.pubsub.`projects.topics`.setIamPolicy
+@resource = '{{ .resource }}'
+@@json = '{
+	"bindings": {{ .data }}
+}';
+{{ end }}

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "terraform_xpn_resource_provisioner",
+    "title": "Role for Terraform service",
+    "description": "Terraform XPN Resource account to perform XPN operations",
+    "stage": "ALPHA",
+    "includedPermissions": [
+      "compute.globalOperations.get",
+      "compute.organizations.enableXpnResource",
+      "compute.projects.get"
+    ]
+  }
+]
