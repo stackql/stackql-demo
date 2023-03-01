@@ -30,6 +30,3 @@ $bindir/stackql exec -i iql/migrate-from-aws-to-google.iql --iqldata data/vars.j
 ```
 
 The output could be piped to a file or you could use the `-f` flag to write the output to a file.
-
-
-$bindir/stackql shell --auth="${AUTH}"
