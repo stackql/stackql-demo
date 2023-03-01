@@ -1,0 +1,19 @@
+INSERT INTO google.compute.instances(
+  project,
+  zone,
+  data__name,
+  data__machineType,
+  data__disks,
+  data__networkInterfaces
+)
+SELECT
+  '{{ .project }}' as project,
+  '{{ .zone }}' as zone,   
+  instanceId as name,	
+  CASE instanceType
+    WHEN 't2.micro' THEN '{{ .machineTypes.e2micro }}'
+  END  as machineType,
+  '{{ .disks }}' as disks,
+  '{{ .networkInterfaces }}' as networkInterfaces
+FROM aws.ec2.instances WHERE region = '{{ .awsRegion }}'
+;
