@@ -1,0 +1,149 @@
+/* meta queries */
+
+REGISTRY LIST;
+
+REGISTRY LIST google;
+
+REGISTRY PULL google;
+
+SHOW PROVIDERS;
+
+SHOW SERVICES IN google;
+
+SHOW SERVICES IN google WHERE name = 'compute';
+
+SHOW SERVICES IN google LIKE '%container%';
+
+SHOW RESOURCES IN google.compute;
+
+DESCRIBE google.compute.instances;
+
+DESCRIBE EXTENDED google.compute.instances;
+
+SHOW METHODS IN google.compute.instances;
+
+SHOW EXTENDED METHODS IN google.compute.instances;
+
+/* sql usage */
+
+SELECT instanceId, instanceType 
+FROM 
+aws.ec2.instances 
+WHERE region = 'us-east-1';
+
+SELECT id, 
+name, 
+status 
+FROM 
+google.compute.instances 
+WHERE project = 'stackql-demo' 
+AND zone = 'australia-southeast1-a';
+
+SELECT id
+FROM azure.compute.virtual_machines 
+ WHERE resourceGroupName = 'stackql-ops-cicd-dev-01' 
+ AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468'
+LIMIT 1;
+
+SELECT name,  
+ split_part(id, '/', 3) as subscription,
+ split_part(id, '/', 5) as resource_group
+FROM azure.compute.virtual_machines 
+ WHERE resourceGroupName = 'stackql-ops-cicd-dev-01' 
+ AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468';
+
+SELECT properties
+FROM azure.compute.virtual_machines 
+ WHERE resourceGroupName = 'stackql-ops-cicd-dev-01' 
+ AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468'
+LIMIT 1;
+
+SELECT name,  
+ json_extract(properties, '$.hardwareProfile.vmSize') as vm_size
+FROM azure.compute.virtual_machines 
+ WHERE resourceGroupName = 'stackql-ops-cicd-dev-01' 
+ AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468';
+
+SELECT instanceType, COUNT(*) as num_instances 
+FROM aws.ec2.instances 
+WHERE region = 'us-east-1' 
+GROUP BY instanceType;
+
+SELECT SUBSTR(machineType,103) as machineType, status, COUNT(*) as num_instances
+FROM google.compute.instances 
+WHERE project = 'stackql-demo' AND zone = 'australia-southeast1-a'
+GROUP BY machineType, status
+HAVING COUNT(*) > 2;
+
+SELECT 'us-east-1' as region, COUNT(*) as num_instances
+FROM aws.ec2.instances
+WHERE region = 'us-east-1'
+UNION
+SELECT 'us-west-2' as region, COUNT(*) as num_instances
+FROM aws.ec2.instances
+WHERE region = 'us-west-1';
+
+select 
+n.id, 
+n.name, 
+json_extract(n.routingConfig, '$.routingMode') as network_routing_mode, 
+s.name as subnetwork_name
+from google.compute.networks n 
+inner join google.compute.subnetworks s on n.name =  split_part(s.network, '/', 10) 
+where n.project = 'stackql-demo'
+and s.project = 'stackql-demo'
+and s.region = 'australia-southeast1';
+
+/* lifecycle ops */
+
+-- stop a running instance
+EXEC google.compute.instances.stop 
+@instance='stackql-demo-001',
+@project='stackql-demo',
+@zone='australia-southeast1-a';
+
+-- check the status of the instance
+SELECT name, status 
+FROM google.compute.instances 
+WHERE project = 'stackql-demo' 
+AND zone = 'australia-southeast1-a' 
+AND name = 'stackql-demo-001';
+
+-- start a running instance
+EXEC google.compute.instances.start 
+@instance='stackql-demo-001',
+@project='stackql-demo',
+@zone='australia-southeast1-a';
+
+-- check the status of the instance (again)
+SELECT name, status 
+FROM google.compute.instances 
+WHERE project = 'stackql-demo' 
+AND zone = 'australia-southeast1-a' 
+AND name = 'stackql-demo-001';
+
+/* sync/async */
+
+INSERT /*+ AWAIT */ INTO google.compute.disks(
+  project,
+  zone,
+  data__name,
+  data__sizeGb
+)
+SELECT
+  'stackql-demo',
+  'australia-southeast1-a',
+  'test-disk-1',
+  '50'
+;
+
+SELECT name, sizeGb
+FROM google.compute.disks
+WHERE project = 'stackql-demo'
+AND zone = 'australia-southeast1-a'
+AND name LIKE 'test-%';
+
+DELETE FROM google.compute.disks
+WHERE project = 'stackql-demo'
+AND zone = 'australia-southeast1-a'
+AND disk = 'test-disk-1';

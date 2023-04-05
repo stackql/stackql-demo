@@ -1,0 +1,10 @@
+INSERT INTO azure.compute.virtual_machines(
+  resourceGroupName,
+  subscriptionId,
+  vmName
+)
+SELECT
+  'stackql-demo',
+  '631d1c6d-2a65-43e7-93c2-688bfe4e1468',
+  'stackql-demo-vm'
+;

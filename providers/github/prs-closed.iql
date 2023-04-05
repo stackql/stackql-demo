@@ -1,0 +1,37 @@
+SELECT datetime(timestamp/1000, 'unixepoch', 'localtime') as local_time, message
+FROM aws.cloudwatch.log_events
+WHERE region = 'us-west-1' 
+AND data__logGroupName = 'Test' 
+AND data__logStreamName = 'Test';
+
+select id, title, created_at from
+github.pulls.pull_requests
+where owner = 'stackql'
+and repo = 'stackql'
+and state = 'closed';
+
+select * from
+github.pulls.reviews
+where owner = 'stackql'
+and pull_number = 1
+and repo = 'stackql';
+
+select 
+  req.id, req.title, req.created_at, rev.state 
+from
+github.pulls.pull_requests req
+inner JOIN
+github.pulls.reviews rev
+on rev.pull_number = req.number
+where 
+req.owner = 'stackql'
+and req.repo = 'stackql'
+and req.state = 'closed'
+and rev.owner = 'stackql'
+and rev.repo = 'stackql';
+
+export DEV_REG='{ "url": "https://registry-dev.stackql.app/providers" }'
+./stackql --registry="${DEV_REG}" shell
+
+REG_STR='{"url": "file://.stackql", "localDocRoot": "'.stackql'", "verifyConfig": {"nopVerify": true}}'
+./stackql shell --registry="${REG_STR}"

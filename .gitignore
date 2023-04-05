@@ -1,6 +1,8 @@
 .stackql/
 stackql
 *.csv
+*.json
 .auth
 auth.sh
 api.keys
+stackql-zip
