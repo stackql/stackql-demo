@@ -1,0 +1,44 @@
+--sizes
+SELECT
+slug,
+description as 'class',
+memory as 'ram ',
+vcpus as 'cpu',
+disk,
+transfer,
+price_monthly,
+price_hourly
+FROM digitalocean.sizes.sizes;
+
+--distro images 
+SELECT
+id,
+slug,
+type,
+distribution as 'distro',
+status,
+min_disk_size,
+size_gigabytes
+FROM
+digitalocean.images.images;
+
+--app images
+ID	
+Slug	
+Name
+Base Distro	
+Min Disk Size
+
+--regions
+SELECT
+name,
+slug
+FROM
+digitalocean.regions.regions;
+
+
+k8s versions
+Slug	
+Version
+
+

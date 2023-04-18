@@ -1,0 +1,30 @@
+SELECT 
+name, 
+JSON_EXTRACT(region, '$.name') as region, 
+JSON_EXTRACT(size, '$.slug') as size,
+'digitalocean' as provider
+FROM digitalocean.droplets.droplets
+UNION
+SELECT
+instanceId as name,
+'us-east-1' as region,
+instanceType as size,
+'aws' as provider
+FROM aws.ec2.instances 
+WHERE region = 'us-east-1';
+
+
+SELECT 
+JSON_EXTRACT(size, '$.slug') as size,
+'digitalocean' as provider,
+COUNT(*) as num_instances
+FROM digitalocean.droplets.droplets
+GROUP BY size, provider
+UNION
+SELECT
+instanceType as size,
+'aws' as provider,
+COUNT(*) as num_instances
+FROM aws.ec2.instances 
+WHERE region = 'us-east-1'
+GROUP BY size, provider;

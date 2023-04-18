@@ -1,0 +1,21 @@
+{{range $index, $element := .droplets}}
+INSERT INTO digitalocean.droplets.droplets ( 
+data__name, 
+data__region, 
+data__size, 
+data__image, 
+data__backups, 
+data__ipv6, 
+data__monitoring, 
+data__tags 
+) 
+SELECT 
+'droplet2-{{$index}}.stackql.io', 
+'nyc3', 
+'{{.size}}', 
+'ubuntu-20-04-x64', 
+true, 
+true, 
+true, 
+'["env:prod", "web"]';
+{{end}}

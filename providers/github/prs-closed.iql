@@ -35,3 +35,24 @@ export DEV_REG='{ "url": "https://registry-dev.stackql.app/providers" }'
 
 REG_STR='{"url": "file://.stackql", "localDocRoot": "'.stackql'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
+
+
+./stackql exec --output csv -f commits.csv "SELECT COUNT(*) as commit_count, JSON_EXTRACT(committer, '$.login') as login FROM github.repos.commits where owner = 'FootballFederationAustralia' and repo = 'arnie' GROUP BY JSON_EXTRACT(committer, '$.login')"
+
+
+./stackql exec --http.response.pageLimit=-1 --output csv -f commits_by_email.csv "SELECT COUNT(*) as commit_count, JSON_EXTRACT(commit, '$.author.email') as email FROM github.repos.commits where owner = 'FootballFederationAustralia' and repo = 'arnie' GROUP BY JSON_EXTRACT(commit, '$.author.email')"
+
+
+./stackql exec --http.response.pageLimit=-1 --output csv -f commits_with_email_and_dates.csv "SELECT JSON_EXTRACT(commit, '$.author.date') as date, JSON_EXTRACT(commit, '$.author.email') as email FROM github.repos.commits where owner = 'FootballFederationAustralia' and repo = 'arnie'"
+
+
+
+
+
+
+
+
+JSON_EXTRACT(commit, '$.author.email') as author_email
+
+
+
