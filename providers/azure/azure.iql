@@ -1,0 +1,7 @@
+SELECT 
+iif(instr(json_extract(properties, '$.backupStorageRedundancies'),'Geo')=0,'false','true') as isGeoRedundant,
+iif(instr(json_extract(properties, '$.backupStorageRedundancies'),'Zone')=0,'false','true') as isZonalRedundant,
+iif(instr(json_extract(properties, '$.backupStorageRedundancies'),'Local')=0,'false','true') as isLocalRedundant,
+iif(json_extract(properties, '$.isResidencyRestricted') = 0,'false','true') as isResidencyRestricted,
+iif(json_extract(properties, '$.supportsAvailabilityZone') = 0,'false','true') as supportsAvailabilityZone
+FROM azure.cosmos_db.locations WHERE subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468';

@@ -5,6 +5,9 @@ REGISTRY LIST;
 REGISTRY LIST google;
 
 REGISTRY PULL google;
+REGISTRY PULL googleadmin;
+REGISTRY PULL aws;
+REGISTRY PULL github;
 
 SHOW PROVIDERS;
 
@@ -97,7 +100,7 @@ and s.region = 'australia-southeast1';
 /* lifecycle ops */
 
 -- stop a running instance
-EXEC google.compute.instances.stop 
+EXEC /*+ AWAIT */ google.compute.instances.stop 
 @instance='stackql-demo-001',
 @project='stackql-demo',
 @zone='australia-southeast1-a';
