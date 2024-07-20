@@ -6,4 +6,5 @@ stackql
 auth.sh
 api.keys
 stackql-zip
+stackql*.sh
 okta_cert.pem

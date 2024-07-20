@@ -1,0 +1,15 @@
+select 
+	name, 
+	family, 
+	size, 
+	tier, 
+	JSON_EXTRACT(locations, '$[0]') as location,
+	resourceType,
+	MAX(CASE WHEN JSON_EXTRACT(capabilities.value, '$.name') = 'vCPUs' THEN JSON_EXTRACT(capabilities.value, '$.value') ELSE 0 END) AS v_cpus,
+	MAX(CASE WHEN JSON_EXTRACT(capabilities.value, '$.name') = 'MemoryGB' THEN JSON_EXTRACT(capabilities.value, '$.value') ELSE 0 END) AS memory_gb,
+    MAX(CASE WHEN JSON_EXTRACT(capabilities.value, '$.name') = 'MinSizeGiB' THEN JSON_EXTRACT(capabilities.value, '$.value') ELSE 0 END) AS min_size_gb,
+    MAX(CASE WHEN JSON_EXTRACT(capabilities.value, '$.name') = 'MaxSizeGiB' THEN JSON_EXTRACT(capabilities.value, '$.value') ELSE 0 END) AS max_size_gb
+from 
+azure.compute.resource_skus, json_each(capabilities) capabilities
+where subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468' 
+GROUP BY name

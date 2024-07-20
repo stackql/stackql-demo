@@ -1,0 +1,32 @@
+--
+-- usage:
+-- ./stackql exec --output csv -i activity_report.iql -f activity_report.csv --var startdate=$(date -u -d '1 day ago' '+%Y-%m-%dT%H:%M:%SZ')
+--
+<<<jsonnet
+{
+  stackqlQuery: {
+    subscriptionId: '631d1c6d-2a65-43e7-93c2-688bfe4e1468',
+    filter: "eventTimestamp ge ''" + std.extVar('startdate') + "''",
+  }
+}
+>>>
+SELECT
+/* the when... */
+eventTimestamp as event_timestamp,
+/* the who... */
+caller,
+JSON_EXTRACT(claims, '$.ipaddr') as ip_address,
+/* the what ... */
+subscriptionId,
+tenantId,
+SPLIT_PART(JSON_EXTRACT(authorization, '$.scope'), '/', 5) as resource_group,
+SPLIT_PART(resourceId, '/', -1) as resource_name,
+/* the how... */
+level,
+JSON_EXTRACT(authorization, '$.action') as action,
+JSON_EXTRACT(category, '$.localizedValue') as category, 
+JSON_EXTRACT(operationName, '$.localizedValue') as operation, 
+JSON_EXTRACT(status, '$.localizedValue') as status 
+FROM azure.monitor.activity_logs
+WHERE $filter =  '{{ .stackqlQuery.filter }}'
+AND subscriptionId = '{{ .stackqlQuery.subscriptionId }}';
